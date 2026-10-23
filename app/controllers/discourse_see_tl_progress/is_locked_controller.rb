@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseSeeTl3Progress
+module DiscourseSeeTlProgress
   class IsLockedController < ApplicationController
     requires_plugin PLUGIN_NAME
     requires_login

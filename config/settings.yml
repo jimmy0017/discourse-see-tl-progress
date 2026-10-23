@@ -1,6 +1,13 @@
-see_tl3_progress:
-  see_tl3_progress_enabled:
+see_tl_progress:
+  see_tl_progress_enabled:
     default: false
+    client: true
+  enable_for_trust_level_promotions:
+    default: 3
+    type: list
+    choices:
+      - 1
+      - 2
     client: true
   progress_bar_color_light:
     default: "green"
@@ -27,7 +34,7 @@ see_tl3_progress:
     type: string
     required: true
     client: true
-  show_verbose_tl3_progress:
+  show_verbose_tl_progress:
     default: false
     type: bool
     client: true
@@ -35,7 +42,19 @@ see_tl3_progress:
     default: false
     type: bool
     client: true
-  modal_bottom_text:
+  modal_bottom_text_tl1:
+    default: ""
+    type: string
+    textarea: true
+    required: false
+    client: true
+  modal_bottom_text_tl2:
+    default: ""
+    type: string
+    textarea: true
+    required: false
+    client: true
+  modal_bottom_text_tl3:
     default: ""
     type: string
     textarea: true
@@ -45,7 +64,7 @@ see_tl3_progress:
     default: false
     type: bool
     client: true
-  show_warning_when_tl3_requirements_low:
+  show_warning_when_tl_requirements_low:
     default: false
     type: bool
     client: true

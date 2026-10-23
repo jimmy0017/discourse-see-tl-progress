@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-DiscourseSeeTl3Progress::Engine.routes.draw do
-  get "/u/:username/tl3-progress.json" => "tl3_progress#show",
+DiscourseSeeTlProgress::Engine.routes.draw do
+  get "/u/:username/tl-progress.json" => "tl_progress#show",
       :constraints => {
         username: RouteFormat.username,
       }
 end
 
-DiscourseSeeTl3Progress::Engine.routes.draw do
+DiscourseSeeTlProgress::Engine.routes.draw do
   get "/u/:username/is-locked.json" => "is_locked#show",
       :constraints => {
         username: RouteFormat.username,
       }
 end
 
-Discourse::Application.routes.draw { mount ::DiscourseSeeTl3Progress::Engine, at: "/" }
+Discourse::Application.routes.draw { mount ::DiscourseSeeTlProgress::Engine, at: "/" }

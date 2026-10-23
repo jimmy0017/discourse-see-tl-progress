@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module DiscourseSeeTl3Progress
-  class Tl3ProgressController < ApplicationController
+module DiscourseSeeTlProgress
+  class TlProgressController < ApplicationController
     requires_plugin PLUGIN_NAME
     requires_login
 
@@ -10,7 +10,7 @@ module DiscourseSeeTl3Progress
       raise Discourse::NotFound unless user
       raise Discourse::InvalidAccess unless current_user == user || current_user.staff?
 
-      render json: { stats_progress: ::DiscourseSeeTl3Progress::StatsProgress.new(user).stats }
+      render json: { stats_progress: ::DiscourseSeeTlProgress::StatsProgress.new(user).stats }
     end
   end
 end

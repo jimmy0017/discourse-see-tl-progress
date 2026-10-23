@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module ::DiscourseSeeTl3Progress
+module ::DiscourseSeeTlProgress
   class Engine < ::Rails::Engine
     engine_name PLUGIN_NAME
-    isolate_namespace DiscourseSeeTl3Progress
+    isolate_namespace DiscourseSeeTlProgress
     config.autoload_paths << File.join(config.root, "lib")
     scheduled_job_dir = "#{config.root}/app/jobs/scheduled"
     config.to_prepare do

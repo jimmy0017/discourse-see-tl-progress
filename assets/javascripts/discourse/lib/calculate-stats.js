@@ -1,25 +1,16 @@
+import shouldShow from "./should-show.js";
+
 export function stepsDone(stats) {
   let steps = 0;
-  const allReqs = [
-    !(stats["penalty_counts"]["silenced"] > 0 || stats["silenced"]),
-    !(stats["penalty_counts"]["suspended"] > 0 || stats["suspended"]),
-    stats.days_visited >= stats.min_days_visited,
-    stats.num_topics_replied_to >= stats.min_topics_replied_to,
-    stats.topics_viewed >= stats.min_topics_viewed,
-    stats.posts_read >= stats.min_posts_read,
-    stats.num_flagged_posts <= stats.max_flagged_posts,
-    stats.num_flagged_by_users <= stats.max_flagged_by_users,
-    stats.topics_viewed_all_time >= stats.min_topics_viewed_all_time,
-    stats.posts_read_all_time >= stats.min_posts_read_all_time,
-    stats.num_likes_given >= stats.min_likes_given,
-    stats.num_likes_received >= stats.min_likes_received,
-    stats.num_likes_received_days >= stats.min_likes_received_days,
-    stats.num_likes_received_users >= stats.min_likes_received_users,
-  ];
-
-  for (const req of allReqs) {
-    if (req) {
-      steps++;
+  for (const stat_key in stats) {
+    if (shouldShow(stat_key)) {
+      const stat = stats[stat_key];
+      if (
+        (stat.max && stat.req >= stat.value) ||
+        (!stat.max && stat.value >= stat.req)
+      ) {
+        steps++;
+      }
     }
   }
   return steps;
@@ -27,152 +18,97 @@ export function stepsDone(stats) {
 
 export function percentageDone(stats) {
   let total = 0;
-  const allReqs = [
-    stats["penalty_counts"]["silenced"] > 0 || stats["silenced"] ? 0 : 1,
-    stats["penalty_counts"]["suspended"] > 0 || stats["suspended"] ? 0 : 1,
-    stats.days_visited >= stats.min_days_visited
-      ? 1
-      : stats.days_visited / stats.min_days_visited,
-    stats.num_topics_replied_to >= stats.min_topics_replied_to
-      ? 1
-      : stats.num_topics_replied_to / stats.min_topics_replied_to,
-    stats.topics_viewed >= stats.min_topics_viewed
-      ? 1
-      : stats.topics_viewed / stats.min_topics_viewed,
-    stats.posts_read >= stats.min_posts_read
-      ? 1
-      : stats.posts_read / stats.min_posts_read,
-    stats.max_flagged_posts === 0
-      ? 1
-      : stats.num_flagged_posts <= stats.max_flagged_posts
-        ? (stats.max_flagged_posts - stats.num_flagged_posts) /
-          stats.max_flagged_posts
-        : 0,
-    stats.max_flagged_by_users === 0
-      ? 1
-      : stats.num_flagged_by_users <= stats.max_flagged_by_users
-        ? (stats.max_flagged_by_users - stats.num_flagged_by_users) /
-          stats.max_flagged_by_users
-        : 0,
-    stats.topics_viewed_all_time >= stats.min_topics_viewed_all_time
-      ? 1
-      : stats.topics_viewed_all_time / stats.min_topics_viewed_all_time,
-    stats.posts_read_all_time >= stats.min_posts_read_all_time
-      ? 1
-      : stats.posts_read_all_time / stats.min_posts_read_all_time,
-    stats.num_likes_given >= stats.min_likes_given
-      ? 1
-      : stats.num_likes_given / stats.min_likes_given,
-    stats.num_likes_received >= stats.min_likes_received
-      ? 1
-      : stats.num_likes_received / stats.min_likes_received,
-    stats.num_likes_received_days >= stats.min_likes_received_days
-      ? 1
-      : stats.num_likes_received_days / stats.min_likes_received_days,
-    stats.num_likes_received_users >= stats.min_likes_received_users
-      ? 1
-      : stats.num_likes_received_users / stats.min_likes_received_users,
-  ];
 
-  for (const req of allReqs) {
-    total += req;
+  for (const stat_key in stats) {
+    if (shouldShow(stat_key)) {
+      const stat = stats[stat_key];
+      if (stat.max) {
+        if (stat.req >= stat.value) {
+          total += 1;
+        } else {
+          total += (stat.value - stat.req) / stat.value;
+        }
+      } else {
+        if (stat.value >= stat.req) {
+          total += 1;
+        } else {
+          total += (stat.req - stat.value) / stat.req;
+        }
+      }
+    } else {
+      const stat = stats[stat_key];
+      if (stat["penalty_counts"]) {
+        if (stat["penalty_counts"]["silenced"] === 0) {
+          total += 1;
+        }
+        if (stat["penalty_counts"]["suspended"] === 0) {
+          total += 1;
+        }
+      }
+    }
   }
 
-  return Math.round((total / 14) * 100);
+  return Math.round((total / statsBaseNum(stats)) * 100);
+}
+
+export function statsBaseNum(stats) {
+  return Object.keys(stats).length - (stats.trust_level === 3 ? 9 : 3);
 }
 
 export function doesQualify(stats) {
-  return (
-    !(stats["penalty_counts"]["silenced"] > 0 || stats["silenced"]) &&
-    !(stats["penalty_counts"]["suspended"] > 0 || stats["suspended"]) &&
-    stats.days_visited >= stats.min_days_visited &&
-    stats.num_topics_replied_to >= stats.min_topics_replied_to &&
-    stats.topics_viewed >= stats.min_topics_viewed &&
-    stats.posts_read >= stats.min_posts_read &&
-    stats.num_flagged_posts <= stats.max_flagged_posts &&
-    stats.num_flagged_by_users <= stats.max_flagged_by_users &&
-    stats.topics_viewed_all_time >= stats.min_topics_viewed_all_time &&
-    stats.posts_read_all_time >= stats.min_posts_read_all_time &&
-    stats.num_likes_given >= stats.min_likes_given &&
-    stats.num_likes_received >= stats.min_likes_received &&
-    stats.num_likes_received_days >= stats.min_likes_received_days &&
-    stats.num_likes_received_users >= stats.min_likes_received_users
-  );
+  return stats.tl1_met ?? stats.tl2_met ?? stats.tl3_met ?? false;
 }
 
-export function diffLess(stats) {
-  const diffs = {
-    days_visited: stats.min_days_visited - stats.days_visited,
-    topics_replied_to:
-      stats.min_topics_replied_to - stats.num_topics_replied_to,
-    topics_viewed: stats.min_topics_viewed - stats.topics_viewed,
-    posts_read: stats.min_posts_read - stats.posts_read,
-    topics_viewed_all_time:
-      stats.min_topics_viewed_all_time - stats.topics_viewed_all_time,
-    posts_read_all_time:
-      stats.min_posts_read_all_time - stats.posts_read_all_time,
-    likes_given: stats.min_likes_given - stats.num_likes_given,
-    likes_received: stats.min_likes_received - stats.num_likes_received,
-    likes_received_days:
-      stats.min_likes_received_days - stats.num_likes_received_days,
-    likes_received_users:
-      stats.min_likes_received_users - stats.num_likes_received_users,
-  };
+export function nextStatToGet(stats) {
+  let min_stat_key = null;
+  let min = Infinity;
 
-  for (const [key, value] of Object.entries(diffs)) {
-    if (value <= 0) {
-      delete diffs[key];
+  for (const stat_key in stats) {
+    if (shouldShow(stat_key)) {
+      const stat = stats[stat_key];
+      // Skip the flag-related stats (the user can't do anything about them)
+      if (stat.max) {
+        continue;
+      }
+      if (stat.value < stat.req) {
+        const diff = stat.req - stat.value;
+        if (diff < min) {
+          min = diff;
+          min_stat_key = stat_key;
+        }
+      }
     }
   }
 
-  const all_keys = Object.keys(diffs);
-  if (all_keys.length === 0) {
-    return null;
-  }
-  const min_val = Math.min(...Object.values(diffs));
-  const stat_name = all_keys.find((key) => diffs[key] === min_val);
-
   return {
-    key: stat_name,
-    left: diffs[stat_name],
+    key: min_stat_key,
+    left: min === Infinity ? 0 : min,
   };
 }
 
-export function diffMore(stats, site_settings) {
-  const diffs = {
-    days_visited: stats.days_visited - stats.min_days_visited,
-    topics_replied_to:
-      stats.num_topics_replied_to - stats.min_topics_replied_to,
-    topics_viewed: stats.topics_viewed - stats.min_topics_viewed,
-    posts_read: stats.posts_read - stats.min_posts_read,
-    topics_viewed_all_time:
-      stats.topics_viewed_all_time - stats.min_topics_viewed_all_time,
-    posts_read_all_time:
-      stats.posts_read_all_time - stats.min_posts_read_all_time,
-    likes_given: stats.num_likes_given - stats.min_likes_given,
-    likes_received: stats.num_likes_received - stats.min_likes_received,
-    likes_received_days:
-      stats.num_likes_received_days - stats.min_likes_received_days,
-    likes_received_users:
-      stats.num_likes_received_users - stats.min_likes_received_users,
-    flagged_posts: stats.max_flagged_posts - stats.num_flagged_posts,
-    flagged_by_users: stats.max_flagged_by_users - stats.num_flagged_by_users,
-  };
+export function nextStatToLose(stats, site_settings) {
+  let max_stat_key = null;
+  let max = 0;
 
-  for (const [key, value] of Object.entries(diffs)) {
-    if (value >= site_settings.low_tl3_stats_minimum || value < 0) {
-      delete diffs[key];
+  for (const stat_key in stats) {
+    if (shouldShow(stat_key)) {
+      const stat = stats[stat_key];
+      // Skip the flag-related stats (the user can't do anything about them)
+      if (stat.max) {
+        continue;
+      }
+      if (stat.value > stat.req) {
+        const diff = stat.value - stat.req;
+        if (diff >= site_settings.low_tl3_stats_minimum && diff > max) {
+          max = diff;
+          max_stat_key = stat_key;
+        }
+      }
     }
   }
-  const all_keys = Object.keys(diffs);
-  if (all_keys.length === 0) {
-    return null;
-  }
-  const min_val = Math.min(...Object.values(diffs));
-  const stat_name = all_keys.find((key) => diffs[key] === min_val);
 
   return {
-    key: stat_name,
-    left: diffs[stat_name],
+    key: max_stat_key,
+    left: max,
   };
 }

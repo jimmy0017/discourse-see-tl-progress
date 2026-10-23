@@ -3,12 +3,13 @@ en:
     admin:
       site_settings:
         categories:
-          see_tl3_progress: "See TL3 Progress"
+          see_tl_progress: "See TL Progress"
   js:
-    see_tl3_progress:
-      title: "See TL3 Progress"
-      modal_button_text: "Show TL3 progress"
-      modal_title: 
+    see_tl_progress:
+      modal_button_text: "Show TL%{trust_level} progress"
+      modal_title_tl_1: "TL1 progress"
+      modal_title_tl_2: "TL2 progress"
+      modal_title_tl_3: 
         one: "TL3 Progress (based on last %{num_days} day)"
         other: "TL3 Progress (based on last %{num_days} days)"
       section_title: "TL3 Progress"
@@ -23,19 +24,22 @@ en:
       flagged_posts: "Flagged Posts"
       flagged_by_users: "Users Who Flagged"
       topics_viewed_all_time: "Topics Viewed (all time)"
+      topics_entered: "Topics entered"
       posts_read_all_time: "Posts Read (all time)"
       likes_given: "Likes Given"
       likes_received: "Likes Received"
       likes_received_days: "Likes Received: unique days"
       likes_received_users: "Likes Received: unique users"
-      progress_done: "%{steps_completed}/14 steps done, %{percentage_done}% complete."
+      progress_done: "%{steps_completed}/%{total_steps} steps done, %{percentage_done}% complete."
       time_period:
         one: "Based on last %{num_days} days."
         other: "Based on last %{num_days} days."
+      time_read: "Time read"
+      account_existed_time: "Account existed duration"
       closest_stat: "Closest: %{stat_name}, %{stat_left_to_next} to go."
       closest_stat_to_lose: "You are close to losing TL3! In danger: %{stat_name}, %{stat_left} away."
-      qualifies: "Qualifies for trust level 3."
-      does_not_qualify: "Doesn't qualify for trust level 3."
+      qualifies: "Qualifies for trust level %{trust_level}."
+      does_not_qualify: "Doesn't qualify for trust level %{trust_level}."
       will_be_promoted: "Will be promoted soon."
       will_be_demoted: "Will be demoted soon."
       locked_will_not_be_promoted: "Trust level locked. Will never be promoted."

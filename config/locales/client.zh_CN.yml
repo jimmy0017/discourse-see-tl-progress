@@ -3,12 +3,13 @@ zh_CN:
     admin:
       site_settings:
         categories:
-          see_tl3_progress: "查看 TL3 进度"
+          see_tl_progress: "查看 TL 进度"
   js:
-    see_tl3_progress:
-      title: "查看 TL3 进度"
-      modal_button_text: "显示 TL3 进度"
-      modal_title:
+    see_tl_progress:
+      modal_button_text: "显示 TL%{trust_level} 进度"
+      modal_title_tl_1: "TL1 进度"
+      modal_title_tl_2: "TL2 进度"
+      modal_title_tl_3:
         one: "TL3 进度（基于最近 %{num_days} 天）"
         other: "TL3 进度（基于最近 %{num_days} 天）"
       section_title: "TL3 进度"
@@ -23,19 +24,22 @@ zh_CN:
       flagged_posts: "被举报的帖子"
       flagged_by_users: "举报你的用户数"
       topics_viewed_all_time: "浏览的话题数（全部时间）"
+      topics_entered: "进入的话题数"
       posts_read_all_time: "阅读的帖子数（全部时间）"
       likes_given: "发出的赞"
       likes_received: "收到的赞"
       likes_received_days: "收到的赞：独立天数"
       likes_received_users: "收到的赞：独立用户"
-      progress_done: "已完成 %{steps_completed}/14 步，完成 %{percentage_done}%。"
+      progress_done: "已完成 %{steps_completed}/%{total_steps} 步，完成 %{percentage_done}%。"
       time_period:
         one: "基于最近 %{num_days} 天。"
         other: "基于最近 %{num_days} 天。"
+      time_read: "阅读时间"
+      account_existed_time: "账号存在时长"
       closest_stat: "最接近：%{stat_name}，还差 %{stat_left_to_next}。"
       closest_stat_to_lose: "你即将失去 TL3！危险项：%{stat_name}，还差 %{stat_left}。"
-      qualifies: "符合信任等级 3 的资格。"
-      does_not_qualify: "不符合信任等级 3 的资格。"
+      qualifies: "符合信任等级 %{trust_level} 的资格。"
+      does_not_qualify: "不符合信任等级 %{trust_level} 的资格。"
       will_be_promoted: "即将晋升。"
       will_be_demoted: "即将降级。"
       locked_will_not_be_promoted: "信任等级已锁定。永远不会晋升。"

@@ -3,12 +3,13 @@ zh_TW:
     admin:
       site_settings:
         categories:
-          see_tl3_progress: "查看 TL3 進度"
+          see_tl_progress: "查看 TL 進度"
   js:
-    see_tl3_progress:
-      title: "查看 TL3 進度"
-      modal_button_text: "顯示 TL3 進度"
-      modal_title:
+    see_tl_progress:
+      modal_button_text: "顯示 TL%{trust_level} 進度"
+      modal_title_tl_1: "TL1 進度"
+      modal_title_tl_2: "TL2 進度"
+      modal_title_tl_3:
         one: "TL3 進度（基於最近 %{num_days} 天）"
         other: "TL3 進度（基於最近 %{num_days} 天）"
       section_title: "TL3 進度"
@@ -23,19 +24,22 @@ zh_TW:
       flagged_posts: "被檢舉的貼文"
       flagged_by_users: "檢舉你的使用者數"
       topics_viewed_all_time: "瀏覽的話題數（全部時間）"
+      topics_entered: "進入的話題數"
       posts_read_all_time: "閱讀的貼文數（全部時間）"
       likes_given: "送出的讚"
       likes_received: "收到的讚"
       likes_received_days: "收到的讚：獨立天數"
       likes_received_users: "收到的讚：獨立使用者"
-      progress_done: "已完成 %{steps_completed}/14 步，完成 %{percentage_done}%。"
+      progress_done: "已完成 %{steps_completed}/%{total_steps} 步，完成 %{percentage_done}%。"
       time_period:
         one: "基於最近 %{num_days} 天。"
         other: "基於最近 %{num_days} 天。"
+      time_read: "閱讀時間"
+      account_existed_time: "帳號存在時長"
       closest_stat: "最接近：%{stat_name}，還差 %{stat_left_to_next}。"
       closest_stat_to_lose: "你即將失去 TL3！危險項：%{stat_name}，還差 %{stat_left}。"
-      qualifies: "符合信任等級 3 的資格。"
-      does_not_qualify: "不符合信任等級 3 的資格。"
+      qualifies: "符合信任等級 %{trust_level} 的資格。"
+      does_not_qualify: "不符合信任等級 %{trust_level} 的資格。"
       will_be_promoted: "即將晉升。"
       will_be_demoted: "即將降級。"
       locked_will_not_be_promoted: "信任等級已鎖定。永遠不會晉升。"
