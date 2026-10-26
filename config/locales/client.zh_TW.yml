@@ -37,7 +37,7 @@ zh_TW:
       time_read: "閱讀時間"
       account_existed_time: "帳號存在時長"
       closest_stat: "最接近：%{stat_name}，還差 %{stat_left_to_next}。"
-      closest_stat_to_lose: "你即將失去 TL3！危險項：%{stat_name}，還差 %{stat_left}。"
+      closest_stat_to_lose: "你即將失去 TL3！危險項：%{stat_name}，再少 %{stat_left} 就會降級。"
       qualifies: "符合信任等級 %{trust_level} 的資格。"
       does_not_qualify: "不符合信任等級 %{trust_level} 的資格。"
       will_be_promoted: "即將晉升。"

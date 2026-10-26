@@ -9,12 +9,14 @@ module DiscourseSeeTlProgress
     end
 
     def stats
-      if @user.trust_level + 1 == 1
-        tl1_stats()
-      elsif @user.trust_level + 1 == 2
-        tl2_stats()
-      elsif @user.trust_level + 1 == 3
-        tl3_stats()
+      case @user.trust_level
+      when 0
+        tl1_stats
+      when 1
+        tl2_stats
+      when 2, 3
+        # TL3 users get the same TL3 stats so they can track whether they keep TL3
+        tl3_stats
       else
         {}
       end
@@ -100,9 +102,11 @@ module DiscourseSeeTlProgress
 
     # TL2 -> TL3
     def tl3_stats
-      { trust_level: 3, tl3_met: Promotion.tl3_met?(@user) }.merge(
-        DiscourseSeeTlProgress::TL3Stats.new(@user).stats,
-      )
+      # For users already at TL3, "met" means they keep TL3: core only demotes when
+      # requirements_lost? (stats below LOW_WATER_MARK, i.e. 90% of the requirements).
+      met = @user.trust_level >= 3 ? !@pc.requirements_lost? : Promotion.tl3_met?(@user)
+
+      { trust_level: 3, tl3_met: met }.merge(DiscourseSeeTlProgress::TL3Stats.new(@user).stats)
     end
   end
 end

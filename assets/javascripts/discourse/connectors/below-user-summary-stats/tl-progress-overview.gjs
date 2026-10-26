@@ -88,8 +88,8 @@ export default class Tl3ProgressButton extends Component {
     return (
       this.siteSettings.show_verbose_tl_progress &&
       this.siteSettings.show_next_closest_stat &&
-      this.stepsDone < 14 &&
-      Boolean(nextStatToGet(this.stats))
+      this.stepsDone < statsBaseNum(this.stats) &&
+      Boolean(nextStatToGet(this.stats).key)
     );
   }
 
@@ -125,13 +125,14 @@ export default class Tl3ProgressButton extends Component {
       !this.stats.on_grace_period &&
       this.siteSettings.show_warning_when_tl_requirements_low &&
       this.args.user.trust_level === 3 &&
-      Boolean(nextStatToLose(this.stats, this.siteSettings))
+      this.stats.trust_level === 3 &&
+      Boolean(nextStatToLose(this.stats, this.siteSettings).key)
     );
   }
 
   get closestStatToLoseText() {
     const closestStatObj = nextStatToLose(this.stats, this.siteSettings);
-    if (!closestStatObj) {
+    if (!closestStatObj.key) {
       return "";
     }
     return i18n("see_tl_progress.closest_stat_to_lose", {
@@ -202,13 +203,19 @@ export default class Tl3ProgressButton extends Component {
     }
   }
 
+  // The server returns {} for trust levels it has no progress for (e.g. TL4)
+  get hasStats() {
+    return Boolean(this.stats) && Object.keys(this.stats).length > 0;
+  }
+
   async getUserStats() {
     try {
       const data = await ajax(`/u/${this.args.user.username}/tl-progress.json`);
       this.stats = data.stats_progress;
-      this.stats_loading = false;
     } catch (e) {
       popupAjaxError(e);
+    } finally {
+      this.stats_loading = false;
     }
   }
 
@@ -224,9 +231,10 @@ export default class Tl3ProgressButton extends Component {
     try {
       const data = await ajax(`/u/${this.args.user.username}/is-locked.json`);
       this.lockedStatus = data;
-      this.is_locked_loading = false;
     } catch (e) {
       popupAjaxError(e);
+    } finally {
+      this.is_locked_loading = false;
     }
   }
 
@@ -240,7 +248,7 @@ export default class Tl3ProgressButton extends Component {
       <DConditionalLoadingSpinner
         @condition={{or this.stats_loading this.is_locked_loading}}
       />
-    {{else}}
+    {{else if this.hasStats}}
       <h3>{{this.overviewHeading}}</h3>
       {{#if (lt @user.trust_level 3)}}
         <div class="segmented-bars">
