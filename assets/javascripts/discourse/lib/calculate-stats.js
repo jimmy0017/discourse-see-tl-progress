@@ -22,17 +22,18 @@ export function percentageDone(stats) {
   for (const stat_key in stats) {
     if (shouldShow(stat_key)) {
       const stat = stats[stat_key];
+      // Add the fraction of each requirement that is already satisfied
       if (stat.max) {
         if (stat.req >= stat.value) {
           total += 1;
         } else {
-          total += (stat.value - stat.req) / stat.value;
+          total += stat.req / stat.value;
         }
       } else {
         if (stat.value >= stat.req) {
           total += 1;
         } else {
-          total += (stat.req - stat.value) / stat.req;
+          total += stat.req > 0 ? stat.value / stat.req : 1;
         }
       }
     } else {
@@ -48,11 +49,18 @@ export function percentageDone(stats) {
     }
   }
 
-  return Math.round((total / statsBaseNum(stats)) * 100);
+  const base = statsBaseNum(stats);
+  return base > 0 ? Math.round((total / base) * 100) : 0;
 }
 
 export function statsBaseNum(stats) {
-  return Object.keys(stats).length - (stats.trust_level === 3 ? 9 : 3);
+  if (!stats || Object.keys(stats).length === 0) {
+    return 0;
+  }
+  return Math.max(
+    Object.keys(stats).length - (stats.trust_level === 3 ? 9 : 3),
+    0
+  );
 }
 
 export function doesQualify(stats) {
@@ -86,9 +94,20 @@ export function nextStatToGet(stats) {
   };
 }
 
+// Core demotes a TL3 user when a stat drops below 90% of its requirement
+// (TrustLevel3Requirements::LOW_WATER_MARK); the two all-time stats use 100%.
+const LOW_WATER_MARK = 0.9;
+
+export function demotionLine(stat_key, stat) {
+  return stat_key.endsWith("_all_time") ? stat.req : stat.req * LOW_WATER_MARK;
+}
+
+// Returns the stat closest to the demotion line, if its margin is below
+// `low_tl3_stats_minimum`. `left` is how much more the stat can drop before
+// the user is demoted (0 if already below the line).
 export function nextStatToLose(stats, site_settings) {
-  let max_stat_key = null;
-  let max = 0;
+  let min_stat_key = null;
+  let min = Infinity;
 
   for (const stat_key in stats) {
     if (shouldShow(stat_key)) {
@@ -97,18 +116,16 @@ export function nextStatToLose(stats, site_settings) {
       if (stat.max) {
         continue;
       }
-      if (stat.value > stat.req) {
-        const diff = stat.value - stat.req;
-        if (diff >= site_settings.low_tl3_stats_minimum && diff > max) {
-          max = diff;
-          max_stat_key = stat_key;
-        }
+      const margin = Math.floor(stat.value - demotionLine(stat_key, stat));
+      if (margin < site_settings.low_tl3_stats_minimum && margin < min) {
+        min = margin;
+        min_stat_key = stat_key;
       }
     }
   }
 
   return {
-    key: max_stat_key,
-    left: max,
+    key: min_stat_key,
+    left: min_stat_key ? Math.max(min, 0) : 0,
   };
 }

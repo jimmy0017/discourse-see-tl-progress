@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { concat } from "@ember/helper";
 import { service } from "@ember/service";
 import { trustHTML } from "@ember/template";
-import { and, notEq } from "discourse/truth-helpers";
+import { and, eq, notEq } from "discourse/truth-helpers";
 import dIcon from "discourse/ui-kit/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import { doesQualify } from "../lib/calculate-stats.js";
@@ -18,7 +18,7 @@ export default class Tl3ProgressModal extends Component {
 
   get suspended_before() {
     const logic =
-      this.stats["penalty_counts"]["suspended"] > 0 || this.stats["suspended"];
+      this.stats.penalty_counts?.suspended > 0 || Boolean(this.stats.suspended);
     return {
       data: logic,
       style: `color: ${logic ? "var(--danger)" : "var(--success)"}`,
@@ -27,7 +27,7 @@ export default class Tl3ProgressModal extends Component {
 
   get silenced_before() {
     const logic =
-      this.stats["penalty_counts"]["silenced"] > 0 || this.stats["silenced"];
+      this.stats.penalty_counts?.silenced > 0 || Boolean(this.stats.silenced);
     return {
       data: logic,
       style: `color: ${logic ? "var(--danger)" : "var(--success)"}`,
